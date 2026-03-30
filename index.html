@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mo Bistro | Fine Dining</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- DISTRICT 5 "ART OF FORM" VARIABLES --- */
+        :root {
+            --bg-main: #1A1513; /* Deep Espresso Brown */
+            --bg-sec: #14100F; /* Darker tone for depth */
+            --accent: #C87A50; /* Warm Terracotta / Amber */
+            --text-main: #F0E9E1; /* Soft Oat / Ivory */
+            --text-muted: #A09387; /* Warm Taupe */
+            --border-thin: rgba(200, 122, 80, 0.15); 
+            --transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* --- RESET & BASE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html { scroll-behavior: smooth; font-size: 16px; }
+        
+        body { 
+            background-color: var(--bg-main); 
+            color: var(--text-main); 
+            font-family: 'Montserrat', sans-serif; 
+            overflow-x: hidden; 
+            line-height: 1.8; 
+        }
+        
+        h1, h2, h3, h4, .serif { font-family: 'Cormorant Garamond', serif; font-weight: 400; }
+
+        /* --- MOCKUP WATERMARK --- */
+        .watermark {
+            position: fixed; bottom: 25px; right: 30px;
+            font-family: 'Montserrat', sans-serif; font-size: 0.75rem; color: var(--text-main);
+            opacity: 0.12; pointer-events: none; z-index: 9998;
+            text-transform: uppercase; letter-spacing: 3px; transition: transform 0.1s ease-out;
+        }
+
+        /* --- FLOATING WHATSAPP BUTTON (CONVERSION DRIVER) --- */
+        .fab-whatsapp {
+            position: fixed; bottom: 30px; left: 30px;
+            width: 60px; height: 60px; background-color: #25D366; color: white;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 2rem; text-decoration: none; z-index: 9997;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3); transition: var(--transition);
+            animation: pulse-green 2s infinite;
+        }
+        .fab-whatsapp:hover { transform: scale(1.1); background-color: #1EBE57; }
+        
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+
+        /* --- PRELOADER --- */
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-main); z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 1.2s ease, visibility 1.2s; 
+        }
+        .loader-logo-img { 
+            max-width: 100px; width: 100px; height: 100px; border-radius: 50%; 
+            object-fit: cover; border: 2px solid var(--accent); 
+            animation: pulseRotate 3s infinite ease-in-out; 
+        }
+        
+        @keyframes pulseRotate {
+            0% { opacity: 0; transform: scale(0.9) rotate(-5deg); }
+            50% { opacity: 1; transform: scale(1) rotate(0deg); }
+            100% { opacity: 0; transform: scale(1.1) rotate(5deg); }
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed; top: 0; width: 100%; padding: 30px 5%;
+            display: flex; justify-content: space-between; align-items: center; z-index: 1000;
+            background: transparent; transition: var(--transition);
+        }
+        nav.scrolled { background: rgba(26, 21, 19, 0.98); padding: 15px 5%; border-bottom: 1px solid var(--border-thin); box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        
+        .logo { font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: var(--text-main); text-decoration: none; letter-spacing: 4px; text-transform: uppercase; transition: var(--transition); display: flex; align-items: center; }
+        .logo-img { max-height: 40px; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--accent); }
+        
+        .nav-links { display: flex; gap: 40px; align-items: center; }
+        .nav-links a { color: var(--text-main); text-decoration: none; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; transition: var(--transition); }
+        .nav-links a:hover { color: var(--accent); }
+        
+        .btn-reserve { background: transparent; color: var(--accent) !important; padding: 14px 30px; border: 1px solid var(--accent); font-family: 'Montserrat', sans-serif; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; transition: var(--transition); }
+        .btn-reserve:hover { background: var(--accent); color: var(--bg-main) !important; }
+
+        .hamburger { display: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; transition: var(--transition); }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center;
+            position: relative; overflow: hidden;
+            background: linear-gradient(rgba(26, 21, 19, 0.75), rgba(26, 21, 19, 0.98)), url('https://cairoscene.com/Content/Admin/Uploads/Articles/ArticlesMainPhoto/1168439/c1873c4b-8cb0-420e-a4dd-39e91ca37659.jpg') center/cover no-repeat;
+        }
+        .hero-content { position: relative; z-index: 1; max-width: 900px; padding: 0 20px; color: var(--text-main); }
+        .hero-subtitle { display: block; margin-bottom: 25px; font-size: 0.8rem; color: var(--accent); letter-spacing: 6px; text-transform: uppercase; font-weight: 500; }
+        .hero h1 { font-size: 6rem; line-height: 1; margin-bottom: 30px; letter-spacing: 2px; animation: slideInUp 1s ease-out; }
+        .hero p { font-size: 1rem; color: rgba(240, 233, 225, 0.85); margin-bottom: 50px; font-weight: 400; max-width: 600px; margin-inline: auto; line-height: 2; animation: slideInUp 1s ease-out 0.2s both; }
+        
+        .btn-solid { background: var(--accent); color: var(--bg-main); text-decoration: none; padding: 16px 40px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; display: inline-block; transition: var(--transition); border: 1px solid var(--accent); animation: slideInUp 1s ease-out 0.4s both; font-weight: 600; }
+        .btn-solid:hover { background: transparent; color: var(--accent); }
+
+        .scroll-indicator {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            color: var(--accent); font-size: 1.2rem; animation: scrollDown 2.5s infinite; z-index: 2; opacity: 0.7;
+        }
+
+        @keyframes scrollDown { 0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); } 40% { transform: translateX(-50%) translateY(10px); } 60% { transform: translateX(-50%) translateY(5px); } }
+        @keyframes slideInUp { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        /* --- SECTION BASE --- */
+        .section { padding: 140px 5%; }
+        .section-header { text-align: center; margin-bottom: 80px; }
+        .section-header span { color: var(--accent); font-size: 0.75rem; letter-spacing: 4px; text-transform: uppercase; display: block; margin-bottom: 15px; }
+        .section-header h2 { font-size: 3.5rem; letter-spacing: 1px; color: var(--text-main); }
+        .divider { width: 1px; height: 60px; background: var(--accent); margin: 30px auto 0; }
+
+        /* --- MENU SECTION --- */
+        .menu-container { max-width: 900px; margin: 0 auto; }
+        .menu-category { margin-bottom: 100px; }
+        .menu-category h3 { font-size: 2.5rem; color: var(--text-main); text-align: center; margin-bottom: 50px; font-style: italic; }
+        
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 80px; }
+        .menu-item { margin-bottom: 20px; transition: var(--transition); padding: 10px; border-radius: 4px; position: relative; }
+        .menu-item:hover { background: var(--bg-sec); }
+        
+        .menu-item-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; width: 100%; }
+        .menu-item-name { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: var(--text-main); white-space: nowrap; letter-spacing: 0.5px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        
+        /* SIGNATURE BADGE (MENU PSYCHOLOGY) */
+        .menu-badge { background: var(--accent); color: var(--bg-main); font-family: 'Montserrat', sans-serif; font-size: 0.5rem; text-transform: uppercase; letter-spacing: 1px; padding: 2px 6px; border-radius: 2px; font-weight: 600; position: relative; top: -2px; }
+
+        .menu-dots { flex-grow: 1; border-bottom: 2px dotted var(--text-muted); opacity: 0.3; margin: 0 15px; position: relative; top: -6px; }
+        .menu-item-price { color: var(--accent); font-family: 'Montserrat', sans-serif; font-size: 0.9rem; letter-spacing: 1px; font-weight: 500; }
+        .menu-item-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.8; font-weight: 400; }
+
+        /* --- GIFT CARDS SECTION (NEW REVENUE STREAM) --- */
+        .gift-section { background: var(--bg-sec); border-top: 1px solid var(--border-thin); padding: 100px 5%; text-align: center; }
+        .gift-container { max-width: 600px; margin: 0 auto; }
+        .gift-icon { font-size: 3rem; color: var(--accent); margin-bottom: 20px; }
+        .gift-container h3 { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; margin-bottom: 15px; }
+        .gift-container p { color: var(--text-muted); margin-bottom: 30px; font-size: 0.95rem; }
+
+        /* --- PRIVATE EVENTS --- */
+        .events-section {
+            background: linear-gradient(rgba(26, 21, 19, 0.85), rgba(26, 21, 19, 0.95)), url('https://artofform.com.eg/wp-content/uploads/2023/09/MO-BISTRO-DISTRICT.png') center/cover fixed;
+            text-align: center; border-top: 1px solid var(--border-thin); border-bottom: 1px solid var(--border-thin);
+        }
+        .events-content { max-width: 700px; margin: 0 auto; }
+        .events-content p { color: var(--text-main); font-size: 1rem; margin-bottom: 40px; font-weight: 300; line-height: 2; }
+
+        /* --- LOCATIONS --- */
+        .locations-section { background: var(--bg-main); }
+        .locations-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; max-width: 1000px; margin: 0 auto; border: 1px solid var(--border-thin); }
+        .location-card { padding: 60px 40px; text-align: center; transition: var(--transition); border: 1px solid var(--border-thin); }
+        .location-card:hover { background: var(--bg-sec); }
+        .location-card h3 { font-size: 2rem; margin-bottom: 10px; color: var(--text-main); }
+        .contact-methods { margin-top: 30px; display: flex; flex-direction: column; gap: 15px; }
+        .contact-methods a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .contact-methods a i { font-size: 1rem; color: var(--accent); }
+        .contact-methods a:hover { color: var(--text-main); }
+
+        /* --- RESERVATIONS (WITH FIX FOR DROPDOWN VISIBILITY) --- */
+        .reservation-section { background: var(--bg-sec); border-top: 1px solid var(--border-thin); }
+        .res-container { max-width: 900px; margin: 0 auto; text-align: center; }
+        .res-form { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; margin-top: 50px; }
+        .input-group { display: flex; flex-direction: column; text-align: left; }
+        .input-group label { font-size: 0.7rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; font-weight: 500; }
+        
+        .input-group input, .input-group select { 
+            background: transparent; border: none; border-bottom: 1px solid var(--border-thin); 
+            color: var(--text-main); padding: 15px 0; font-family: 'Montserrat', sans-serif; font-size: 1rem;
+            outline: none; transition: var(--transition); border-radius: 0; 
+        }
+        
+        /* THIS FIXES THE INVISIBLE OPTIONS ISSUE */
+        .input-group select option { background-color: var(--bg-main); color: var(--text-main); font-size: 0.95rem; }
+        
+        .input-group input:focus, .input-group select:focus { border-color: var(--accent); }
+        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; cursor: pointer; }
+        
+        .btn-submit { grid-column: 1 / -1; background: var(--text-main); color: var(--bg-main); border: none; padding: 22px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; transition: var(--transition); margin-top: 20px; font-family: 'Montserrat', sans-serif; font-weight: 600; }
+        .btn-submit:hover { background: var(--accent); color: var(--bg-main); }
+
+        /* --- VIP NEWSLETTER --- */
+        .newsletter { padding: 80px 5%; text-align: center; background: var(--bg-main); border-top: 1px solid var(--border-thin); }
+        .newsletter h3 { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; margin-bottom: 15px; color: var(--text-main); }
+        .newsletter p { color: var(--text-muted); margin-bottom: 30px; font-size: 0.9rem; font-weight: 400; }
+        .news-form { display: flex; justify-content: center; max-width: 500px; margin: 0 auto; border-bottom: 1px solid var(--border-thin); padding-bottom: 5px; }
+        .news-form input { flex-grow: 1; padding: 15px 10px; background: transparent; border: none; color: var(--text-main); outline: none; font-family: 'Montserrat', sans-serif; font-size: 1rem; }
+        .news-form button { padding: 10px 20px; background: transparent; color: var(--accent); border: none; text-transform: uppercase; letter-spacing: 2px; font-size: 0.75rem; cursor: pointer; transition: var(--transition); font-weight: 600; }
+        .news-form button:hover { color: var(--text-main); }
+
+        /* --- FOOTER --- */
+        footer { padding: 60px 5%; text-align: center; background: var(--bg-sec); border-top: 1px solid var(--border-thin); }
+        .footer-logo-img { max-height: 50px; width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-bottom: 20px; border: 1px solid var(--accent); }
+        footer p { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 10px; }
+        .developer-tag { font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+        .developer-tag a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: var(--transition); font-weight: 500;}
+        .developer-tag a:hover { border-color: var(--accent); }
+
+        /* --- ANIMATIONS --- */
+        .reveal { opacity: 0; transform: translateY(20px); transition: 1.2s all ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 992px) {
+            .hero h1 { font-size: 4.5rem; }
+            .locations-grid { grid-template-columns: 1fr; }
+            .res-form { grid-template-columns: 1fr; }
+            .menu-grid { grid-template-columns: 1fr; gap: 40px; }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed; top: 0; right: -100%; width: 100%; height: 100vh;
+                background: var(--bg-sec); flex-direction: column; justify-content: center;
+                transition: 0.6s cubic-bezier(0.77, 0, 0.175, 1); z-index: -1;
+            }
+            .nav-links.active { right: 0; }
+            .nav-links a { font-size: 1.2rem; color: var(--text-main); }
+            .nav-links .btn-reserve { margin-top: 20px; }
+            
+            .hamburger { display: block; }
+            .hero h1 { font-size: 3.2rem; margin-bottom: 20px; }
+            .hero p { font-size: 0.95rem; }
+            .section { padding: 80px 5%; }
+            .section-header h2 { font-size: 2.5rem; }
+            
+            .menu-dots { display: none; }
+            .menu-item-header { flex-direction: column; align-items: flex-start; gap: 5px; }
+            .news-form { flex-direction: column; border: none; gap: 15px; }
+            .news-form input { border-bottom: 1px solid var(--border-thin); text-align: center; }
+            .news-form button { background: var(--text-main); color: var(--bg-main); padding: 15px; }
+            
+            .watermark { font-size: 0.55rem; bottom: 15px; right: 15px; letter-spacing: 2px; }
+            .fab-whatsapp { bottom: 20px; left: 20px; width: 50px; height: 50px; font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="preloader">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPCZxAfq_dUg3Um7VR6PhuNfQurl6MTPq-Gw&s" class="loader-logo-img" alt="Mo Bistro Logo">
+    </div>
+
+    <a href="https://wa.me/201202227773" class="fab-whatsapp" target="_blank" title="Chat with us">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <div class="watermark" id="watermark">Concept Mockup &mdash; Not Final Product</div>
+
+    <nav id="navbar">
+        <a href="#home" class="logo">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPCZxAfq_dUg3Um7VR6PhuNfQurl6MTPq-Gw&s" class="logo-img" alt="Mo Bistro Logo">
+        </a>
+        <div class="nav-links" id="navLinks">
+            <a href="#home">Home</a>
+            <a href="#menu">The Menu</a>
+            <a href="#events">Private Dining</a>
+            <a href="#contact">Locations</a>
+            <a href="#reservations" class="btn-reserve">Reservations</a>
+        </div>
+        <div class="hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+    </nav>
+
+    <main>
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <span class="hero-subtitle">Elevated Dining Experience</span>
+                <h1>Mo Bistro</h1>
+                <p>Quality dishes cooked with passion & served with a smile. Immerse yourself in a symphony of flavors, where culinary artistry meets the finest seasonal ingredients.</p>
+                <a href="#reservations" class="btn-solid">Reserve a Table</a>
+            </div>
+            <div class="scroll-indicator">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </section>
+
+        <section class="section" id="menu">
+            <div class="section-header reveal">
+                <span>Culinary Art</span>
+                <h2>The Menu</h2>
+                <div class="divider"></div>
+            </div>
+            
+            <div class="menu-container">
+                <div class="menu-category reveal">
+                    <h3>Starters</h3>
+                    <div class="menu-grid">
+                        <div class="menu-item">
+                            <div class="menu-item-header">
+                                <span class="menu-item-name">Truffle Beef Tartare <span class="menu-badge">Signature</span></span>
+                                <div class="menu-dots"></div>
+                                <span class="menu-item-price">450</span>
+                            </div>
+                            <p class="menu-item-desc">Hand-cut tenderloin, quail egg, black truffle shavings, toasted brioche.</p>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-item-header">
+                                <span class="menu-item-name">Burrata & Heirloom</span>
+                                <div class="menu-dots"></div>
+                                <span class="menu-item-price">380</span>
+                            </div>
+                            <p class="menu-item-desc">Fresh Italian burrata, compressed heirloom tomatoes, basil oil, balsamic caviar.</p>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-item-header">
+                                <span class="menu-item-name">Crispy Calamari</span>
+                                <div class="menu-dots"></div>
+                                <span class="menu-item-price">290</span>
+                            </div>
+                            <p class="menu-item-desc">Lightly dusted, served with saffron aioli and charred lemon.</p>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-item-header">
+                                <span class="menu-item-name">Wild Mushroom Arancini</span>
+                                <div class="menu-dots"></div>
+                                <span class="menu-item-price">250</span>
+                            </div>
+                            <p class="menu-item-desc">Crispy risotto bites filled with mozzarella, served on truffle cream.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-category reveal">
+                    <h3>Mains</h3>
+                    <div class="menu-grid">
+                        <div class="menu-item">
+                            <div class="menu-item-header">
+                                <span class="menu-item-name">Wagyu Ribeye (MBS 7+) <span class="menu-badge">Chef's Choice</span></span>
+                                <div class="menu-dots"></div>
+                                <span class="menu-item-price">1850</span>
+                            </div>
+                            <p class="menu-item-desc">Charcoal grilled, pomme purée, roasted bone marrow, rich bordelaise jus.</p>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-item-header">
+                                <span class="menu-item-name">Pan-Seared Sea Bass</span>
+                                <div class="menu-dots"></div>
+                                <span class="menu-item-price">720</span>
+                            </div>
+                            <p class="menu-item-desc">Saffron risotto, charred asparagus, lemon-caper beurre blanc.</p>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-item-header">
+                                <span class="menu-item-name">Classic Beef Wellington</span>
+                                <div class="menu-dots"></div>
+                                <span class="menu-item-price">1200</span>
+                            </div>
+                            <p class="menu-item-desc">Tenderloin wrapped in mushroom duxelles and flaky pastry, served with root vegetables.</p>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-item-header">
+                                <span class="menu-item-name">Porcini Tagliatelle</span>
+                                <div class="menu-dots"></div>
+                                <span class="menu-item-price">480</span>
+                            </div>
+                            <p class="menu-item-desc">Hand-made pasta, 24-month parmigiano reggiano, fresh white truffle oil.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 60px;" class="reveal">
+                <a href="#reservations" class="btn-solid" style="background: transparent; border: 1px solid var(--accent); color: var(--accent);">Book Your Experience</a>
+            </div>
+        </section>
+
+        <section class="gift-section reveal">
+            <div class="gift-container">
+                <i class="fas fa-gift gift-icon"></i>
+                <h3>Give the Gift of Mo Bistro</h3>
+                <p>Treat someone special to an unforgettable dining experience. Our digital gift cards are available for immediate delivery.</p>
+                <a href="#contact" class="btn-solid" onclick="event.preventDefault(); alert('Gift Card purchasing module will go here.');">Purchase Gift Card</a>
+            </div>
+        </section>
+
+        <section class="section events-section" id="events">
+            <div class="events-content reveal">
+                <div class="section-header" style="margin-bottom: 40px;">
+                    <span>Exclusive</span>
+                    <h2>Private Dining</h2>
+                    <div class="divider"></div>
+                </div>
+                <p>Elevate your next corporate gathering, birthday, or private celebration. Mo Bistro offers exclusive venue buyouts and custom culinary experiences designed specifically for your event.</p>
+                <a href="#contact" class="btn-solid">Inquire About Events</a>
+            </div>
+        </section>
+
+        <section class="section locations-section" id="contact">
+            <div class="section-header reveal">
+                <span>Find Us</span>
+                <h2>Our Locations</h2>
+                <div class="divider"></div>
+            </div>
+            
+            <div class="locations-grid">
+                
+                <div class="location-card reveal">
+                    <h3>U Venues</h3>
+                    <div class="contact-methods">
+                        <a href="tel:+201284141370"><i class="fas fa-phone"></i> 012 8414 1370</a>
+                        <a href="https://wa.me/201284141370" target="_blank"><i class="fab fa-whatsapp"></i> Reserve via WhatsApp</a>
+                    </div>
+                </div>
+
+                <div class="location-card reveal">
+                    <h3>District 5</h3>
+                    <div class="contact-methods">
+                        <a href="tel:+201204544460"><i class="fas fa-phone"></i> 012 0454 4460</a>
+                        <a href="https://wa.me/201204544460" target="_blank"><i class="fab fa-whatsapp"></i> Reserve via WhatsApp</a>
+                    </div>
+                </div>
+                
+                <div class="location-card reveal">
+                    <h3>Garden 8</h3>
+                    <div class="contact-methods">
+                        <a href="tel:+201273878768"><i class="fas fa-phone"></i> 012 7387 8768</a>
+                        <a href="https://wa.me/201273878768" target="_blank"><i class="fab fa-whatsapp"></i> Reserve via WhatsApp</a>
+                    </div>
+                </div>
+
+                <div class="location-card reveal">
+                    <h3>Sheikh Zayed</h3>
+                    <div class="contact-methods">
+                        <a href="tel:+201202227773"><i class="fas fa-phone"></i> 012 0222 7773</a>
+                        <a href="https://wa.me/201202227773" target="_blank"><i class="fab fa-whatsapp"></i> Reserve via WhatsApp</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="section reservation-section" id="reservations">
+            <div class="res-container reveal">
+                <div class="section-header" style="margin-bottom: 40px;">
+                    <span>Join Us</span>
+                    <h2>Reservations</h2>
+                    <div class="divider"></div>
+                </div>
+                
+                <form class="res-form" onsubmit="event.preventDefault(); alert('This is a mockup feature designed by Ahmed Eldabah.');">
+                    <div class="input-group">
+                        <label>Location</label>
+                        <select required>
+                            <option value="">Select Branch...</option>
+                            <option value="u_venues">U Venues</option>
+                            <option value="district_5">District 5</option>
+                            <option value="garden_8">Garden 8</option>
+                            <option value="zayed">Sheikh Zayed</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Date</label>
+                        <input type="date" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Time</label>
+                        <select required>
+                            <option value="">Select Time...</option>
+                            <option value="18:00">6:00 PM</option>
+                            <option value="19:00">7:00 PM</option>
+                            <option value="20:00">8:00 PM</option>
+                            <option value="21:00">9:00 PM</option>
+                            <option value="22:00">10:00 PM</option>
+                        </select>
+                    </div>
+                    <div class="input-group" style="grid-column: 1 / -1; margin-top: 10px;">
+                        <label>Guests</label>
+                        <select required>
+                            <option value="" disabled selected>Number of guests...</option>
+                            <option value="1">1 Person</option>
+                            <option value="2">2 People</option>
+                            <option value="3">3 People</option>
+                            <option value="4">4 People</option>
+                            <option value="5">5 People</option>
+                            <option value="6+">6+ People</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-submit">Find a Table</button>
+                </form>
+            </div>
+        </section>
+        
+        <section class="newsletter reveal">
+            <h3>Join the VIP Club</h3>
+            <p>Subscribe to receive exclusive invites to tasting events, seasonal menu previews, and special offers.</p>
+            <form class="news-form" onsubmit="event.preventDefault(); alert('Newsletter signup mockup active.');">
+                <input type="email" placeholder="Enter your email address" required>
+                <button type="submit">Subscribe</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPCZxAfq_dUg3Um7VR6PhuNfQurl6MTPq-Gw&s" class="footer-logo-img" alt="Mo Bistro Logo">
+        <p>Copyright &copy; 2026 Mo Bistro Egypt. All Rights Reserved.</p>
+        <div class="developer-tag">
+            Concept by <a href="https://ahmedeldabah.github.io/" target="_blank">Ahmed Eldabah</a>
+        </div>
+    </footer>
+
+    <script>
+        // 1. Preloader
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('preloader').style.display = 'none';
+                }, 1200);
+            }, 800); 
+        });
+
+        // 2. Navbar Effect
+        const nav = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // 3. Mobile Menu Toggle
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        const icon = hamburger.querySelector('i');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            if(navLinks.classList.contains('active')){
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            });
+        });
+
+        // 4. Subtle Smooth Scroll Reveal Animations
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealOptions = { threshold: 0.1, rootMargin: "0px 0px -30px 0px" };
+        const revealOnScroll = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add('active');
+                observer.unobserve(entry.target); 
+            });
+        }, revealOptions);
+
+        revealElements.forEach(el => revealOnScroll.observe(el));
+
+        // 5. Watermark Parallax Effect
+        const watermark = document.getElementById('watermark');
+        document.addEventListener('mousemove', (e) => {
+            if(window.innerWidth > 768) {
+                const x = (window.innerWidth / 2 - e.pageX) / 40;
+                const y = (window.innerHeight / 2 - e.pageY) / 40;
+                watermark.style.transform = `translate(${x}px, ${y}px)`;
+            }
+        });
+    </script>
+</body>
+</html>
